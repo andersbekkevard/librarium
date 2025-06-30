@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bookkeep.fxui.Controller">
+    <center>
+        <TabPane fx:id="mainTabPane" tabClosingPolicy="UNAVAILABLE">
+            <!-- Library Tab -->
+            <Tab fx:id="libraryTab" text="Library">
+                <content>
+                    <BorderPane>
+                        <top>
+                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                <padding>
+                                    <Insets top="10" right="10" bottom="10" left="10" />
+                                </padding>
+                                <Label text="Search:" />
+                                <TextField fx:id="searchField" promptText="Enter search text..." HBox.hgrow="ALWAYS" />
+                                <ComboBox fx:id="searchTypeComboBox" promptText="Search by" />
+                            </HBox>
+                        </top>
+                        <center>
+                            <SplitPane dividerPositions="0.4">
+                                <TableView fx:id="bookTableView">
+                                    <columns>
+                                        <TableColumn fx:id="titleColumn" text="Title" prefWidth="150" />
+                                        <TableColumn fx:id="authorColumn" text="Author" prefWidth="100" />
+                                        <TableColumn fx:id="yearColumn" text="Year" prefWidth="50" />
+                                        <TableColumn fx:id="genreColumn" text="Genre" prefWidth="100" />
+                                        <TableColumn fx:id="stateColumn" text="Status" prefWidth="80" />
+                                    </columns>
+                                </TableView>
+                                
+                                <VBox fx:id="bookDetailsPane" spacing="10">
+                                    <padding>
+                                        <Insets top="10" right="10" bottom="10" left="10" />
+                                    </padding>
+                                    <!-- Book Details Header -->
+                                    <VBox spacing="5">
+                                        <Label fx:id="bookTitleLabel" style="-fx-font-weight: bold; -fx-font-size: 18;" />
+                                        <Label fx:id="bookAuthorLabel" />
+                                        <Label fx:id="bookYearLabel" />
+                                        <Label fx:id="bookGenreLabel" />
+                                        <Label fx:id="bookStateLabel" />
+                                        <Label fx:id="bookFormatLabel" />
+                                        <Label fx:id="bookPageLabel" />
+                                        <Button fx:id="changeStateButton" onAction="#handleChangeState" text="Change State" />
+                                    </VBox>
+                                    
+                                    <!-- Reading Progress Section -->
+                                    <TitledPane text="Reading Progress" expanded="false">
+                                        <VBox spacing="10">
+                                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                                <Label text="Current page:" />
+                                                <TextField fx:id="pageNumberField" prefWidth="50" />
+                                                <Button fx:id="updatePageButton" text="Update" onAction="#handleUpdatePage" />
+                                            </HBox>
+                                        </VBox>
+                                    </TitledPane>
+                                    
+                                    <!-- Comments Section -->
+                                    <TitledPane text="Add Comment" expanded="false">
+                                        <VBox spacing="10">
+                                            <TextArea fx:id="commentArea" promptText="Enter your comment..." prefHeight="80" />
+                                            <Button fx:id="addCommentButton" text="Add Comment" onAction="#handleAddComment" />
+                                        </VBox>
+                                    </TitledPane>
+                                    
+                                    <!-- Quote Section -->
+                                    <TitledPane text="Add Quote" expanded="false">
+                                        <VBox spacing="10">
+                                            <TextArea fx:id="quoteArea" promptText="Enter a quote from the book..." prefHeight="80" />
+                                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                                <Label text="Page:" />
+                                                <TextField fx:id="quotePageField" prefWidth="50" />
+                                            </HBox>
+                                            <Button fx:id="addQuoteButton" text="Add Quote" onAction="#handleAddQuote" />
+                                        </VBox>
+                                    </TitledPane>
+                                    
+                                    <!-- Review Section -->
+                                    <TitledPane text="Review Book" expanded="false">
+                                        <VBox spacing="10">
+                                            <TextArea fx:id="reviewArea" promptText="Write your review..." prefHeight="80" />
+                                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                                <Label text="Rating:" />
+                                                <Slider fx:id="ratingSlider" min="1" max="5" value="3" showTickMarks="true" showTickLabels="true" snapToTicks="true" majorTickUnit="1" minorTickCount="0" />
+                                            </HBox>
+                                            <Button fx:id="addReviewButton" text="Add Review" onAction="#handleAddReview" />
+                                        </VBox>
+                                    </TitledPane>
+                                    
+                                    <!-- Book History Section -->
+                                    <TitledPane text="Book History" expanded="true" VBox.vgrow="ALWAYS">
+                                        <ListView fx:id="eventsListView" VBox.vgrow="ALWAYS" />
+                                    </TitledPane>
+                                </VBox>
+                            </SplitPane>
+                        </center>
+                    </BorderPane>
+                </content>
+            </Tab>
+            
+            <!-- Shelves Tab -->
+            <Tab fx:id="shelvesTab" text="Shelves">
+                <content>
+                    <BorderPane>
+                        <top>
+                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                <padding>
+                                    <Insets top="10" right="10" bottom="10" left="10" />
+                                </padding>
+                                <Label text="Select Shelf:" />
+                                <ComboBox fx:id="shelfSelector" prefWidth="200" />
+                                <Button fx:id="addShelfButton" text="Add Shelf" onAction="#handleAddShelf" />
+                                <Button fx:id="removeShelfButton" text="Remove Shelf" onAction="#handleRemoveShelf" />
+                            </HBox>
+                        </top>
+                        <center>
+                            <VBox spacing="10">
+                                <padding>
+                                    <Insets top="10" right="10" bottom="10" left="10" />
+                                </padding>
+                                <TableView fx:id="shelfBooksTableView" VBox.vgrow="ALWAYS">
+                                    <columns>
+                                        <TableColumn fx:id="shelfBookTitleColumn" text="Title" prefWidth="200" />
+                                        <TableColumn fx:id="shelfBookAuthorColumn" text="Author" prefWidth="150" />
+                                        <TableColumn fx:id="shelfBookYearColumn" text="Year" prefWidth="50" />
+                                    </columns>
+                                </TableView>
+                                <HBox spacing="10" alignment="CENTER_RIGHT">
+                                    <Button fx:id="addBookToShelfButton" text="Add Book to Shelf" onAction="#handleAddBookToShelf" />
+                                    <Button fx:id="removeBookFromShelfButton" text="Remove Book from Shelf" onAction="#handleRemoveBookFromShelf" />
+                                </HBox>
+                            </VBox>
+                        </center>
+                    </BorderPane>
+                </content>
+            </Tab>
+            
+            <!-- Add Book Tab -->
+            <Tab fx:id="addBookTab" text="Add Book">
+                <content>
+                    <GridPane hgap="10" vgap="10">
+                        <padding>
+                            <Insets top="20" right="20" bottom="20" left="20" />
+                        </padding>
+                        <columnConstraints>
+                            <ColumnConstraints minWidth="100" />
+                            <ColumnConstraints hgrow="ALWAYS" />
+                        </columnConstraints>
+                        
+                        <!-- Title -->
+                        <Label text="Title:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+                        <TextField fx:id="newBookTitle" promptText="Enter book title" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+                        
+                        <!-- Author -->
+                        <Label text="Author:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+                        <TextField fx:id="newBookAuthor" promptText="Enter author name" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+                        
+                        <!-- Publication Year -->
+                        <Label text="Year:" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+                        <TextField fx:id="newBookYear" promptText="Enter publication year" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+                        
+                        <!-- Page Count -->
+                        <Label text="Pages:" GridPane.rowIndex="3" GridPane.columnIndex="0" />
+                        <TextField fx:id="newBookPages" promptText="Enter page count" GridPane.rowIndex="3" GridPane.columnIndex="1" />
+                        
+                        <!-- Genre -->
+                        <Label text="Genre:" GridPane.rowIndex="4" GridPane.columnIndex="0" />
+                        <ComboBox fx:id="newBookGenre" prefWidth="200" GridPane.rowIndex="4" GridPane.columnIndex="1" />
+                        
+                        <!-- Format -->
+                        <Label text="Format:" GridPane.rowIndex="5" GridPane.columnIndex="0" />
+                        <ComboBox fx:id="newBookFormat" prefWidth="200" GridPane.rowIndex="5" GridPane.columnIndex="1" />
+                        
+                        <!-- Shelf Selection -->
+                        <Label text="Shelf:" GridPane.rowIndex="6" GridPane.columnIndex="0" />
+                        <HBox spacing="10" GridPane.rowIndex="6" GridPane.columnIndex="1">
+                            <ComboBox fx:id="newBookShelf" prefWidth="200" />
+                            <CheckBox fx:id="createNewShelfCheckbox" text="Create new shelf" />
+                        </HBox>
+                        
+                        <!-- New Shelf Name (initially hidden) -->
+                        <Label text="New Shelf Name:" GridPane.rowIndex="7" GridPane.columnIndex="0" />
+                        <TextField fx:id="newShelfNameField" promptText="Enter new shelf name" GridPane.rowIndex="7" GridPane.columnIndex="1" />
+                        
+                        <!-- Add Button -->
+                        <Button fx:id="addNewBookButton" text="Add Book to Library" 
+                                onAction="#handleAddNewBook" 
+                                GridPane.rowIndex="8" GridPane.columnIndex="1" 
+                                GridPane.halignment="RIGHT"
+                                style="-fx-font-weight: bold;" />
+                    </GridPane>
+                </content>
+            </Tab>
+            
+            <!-- Settings Tab -->
+            <Tab fx:id="settingsTab" text="Settings">
+                <content>
+                    <VBox spacing="20" alignment="TOP_CENTER">
+                        <padding>
+                            <Insets top="20" right="20" bottom="20" left="20" />
+                        </padding>
+                        <Label text="Library Management" style="-fx-font-size: 18; -fx-font-weight: bold;" />
+                        
+                        <HBox spacing="20" alignment="CENTER">
+                            <Button fx:id="saveLibraryButton" text="Save Library" onAction="#handleSaveLibrary" />
+                            <Button fx:id="loadLibraryButton" text="Load Library" onAction="#handleLoadLibrary" />
+                        </HBox>
+                        
+                        <Label fx:id="lastSavedLabel" />
+                        
+                        <Separator />
+                        
+                        <Label text="About Librarium" style="-fx-font-size: 16; -fx-font-weight: bold;" />
+                        <Label text="Librarium is a personal library tracker that helps you manage your book collection, track your reading progress, and organize books into custom shelves." wrapText="true" />
+                        <Label text="Version 1.0" />
+                    </VBox>
+                </content>
+            </Tab>
+        </TabPane>
+    </center>
+</BorderPane>
