@@ -7,6 +7,8 @@ export interface BookMetadata {
   coverUrl?: string
   description?: string
   rating?: number
+  publisher?: string
+  coverImage?: string
 }
 
 export interface Book {

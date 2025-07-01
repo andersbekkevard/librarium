@@ -28,9 +28,13 @@ import {
   SidebarFooter 
 } from '@/components/ui/sidebar'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { DashboardPage } from '@/components/pages/dashboard-page'
+import { LibraryPage } from '@/components/pages/library-page'
+import { AddBooksPage } from '@/components/pages/add-books-page'
+import { StatisticsPage } from '@/components/pages/statistics-page'
 
 interface AppLayoutProps {
-  children: React.ReactNode
+  children?: React.ReactNode
   currentPage?: string
 }
 
@@ -134,6 +138,29 @@ const SidebarContentComponent = ({ currentPage, onNavigate }: {
   </>
 )
 
+const renderPage = (page: string) => {
+  switch (page) {
+    case 'dashboard':
+      return <DashboardPage />
+    case 'library':
+      return <LibraryPage />
+    case 'add-books':
+      return <AddBooksPage />
+    case 'statistics':
+      return <StatisticsPage />
+    case 'goals':
+      return <div className="p-6"><h1 className="text-2xl font-bold">Goals - Coming Soon</h1></div>
+    case 'reading-log':
+      return <div className="p-6"><h1 className="text-2xl font-bold">Reading Log - Coming Soon</h1></div>
+    case 'collaboration':
+      return <div className="p-6"><h1 className="text-2xl font-bold">Collaboration - Coming Soon</h1></div>
+    case 'household':
+      return <div className="p-6"><h1 className="text-2xl font-bold">Household - Coming Soon</h1></div>
+    default:
+      return <DashboardPage />
+  }
+}
+
 export const AppLayout = ({ children, currentPage = 'dashboard' }: AppLayoutProps) => {
   const [activePage, setActivePage] = useState(currentPage)
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -199,7 +226,7 @@ export const AppLayout = ({ children, currentPage = 'dashboard' }: AppLayoutProp
 
         {/* Main Content */}
         <main className="flex-1 overflow-auto">
-          {children}
+          {children || renderPage(activePage)}
         </main>
       </div>
     </div>
