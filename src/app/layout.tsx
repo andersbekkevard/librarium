@@ -1,9 +1,13 @@
 import type { Metadata } from 'next'
-import { AuthProvider } from '@/contexts/AuthContext'
+import { Inter } from 'next/font/google'
+import './globals.css'
+import { ThemeProvider } from '@/contexts/theme-context'
+
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Librarium - Personal Book Library Management',
-  description: 'Track your reading journey with collaborative book management',
+  title: 'Librarium - Personal Book Library',
+  description: 'A modern web application for personal book library management built with Firebase-native patterns and TypeScript-first development.',
 }
 
 export default function RootLayout({
@@ -12,11 +16,11 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className="min-h-screen bg-background font-sans antialiased">
-        <AuthProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body className={inter.className}>
+        <ThemeProvider defaultTheme="system" storageKey="librarium-ui-theme">
           {children}
-        </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   )

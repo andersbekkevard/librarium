@@ -1,221 +1,119 @@
-'use client'
-
-import React from 'react'
-import { Book, BookState } from '@/types'
-import { Card, CardContent, CardFooter } from '@/components/ui/Card'
-import { Badge } from '@/components/ui/Badge'
-import { Button } from '@/components/ui/Button'
-import { Progress } from '@/components/ui/Progress'
-import { BookOpen, Star, Clock, CheckCircle2 } from 'lucide-react'
+import Image from 'next/image'
+import type { Book } from '@/types'
+import { Badge } from '@/components/ui/badge'
+import { Progress } from '@/components/ui/progress'
+import { Card, CardContent } from '@/components/ui/card'
 
 interface BookCardProps {
   book: Book
-  onStateChange?: (newState: BookState) => void
-  onProgressUpdate?: (progress: number) => void
 }
 
-const BookCard = ({ book, onStateChange, onProgressUpdate }: BookCardProps) => {
-  const getStateIcon = (state: BookState) => {
-    switch (state) {
-      case 'not_started':
-        return <Clock className="h-4 w-4" />
-      case 'in_progress':
-        return <BookOpen className="h-4 w-4" />
-      case 'finished':
-        return <CheckCircle2 className="h-4 w-4" />
-    }
+const stateLabels = {
+  not_started: 'Not Started',
+  in_progress: 'Reading',
+  finished: 'Finished'
+}
+
+const stateVariants = {
+  not_started: 'secondary' as const,
+  in_progress: 'warning' as const,
+  finished: 'success' as const
+}
+
+export const BookCard = ({ book }: BookCardProps) => {
+  const handleCardClick = () => {
+    // Future: Navigate to book detail page
+    console.log('Book clicked:', book.title)
   }
 
-  const getStateColor = (state: BookState) => {
-    switch (state) {
-      case 'not_started':
-        return 'secondary'
-      case 'in_progress':
-        return 'default'
-      case 'finished':
-        return 'destructive'
+  const handleCardKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      handleCardClick()
     }
   }
-
-  const getNextState = (currentState: BookState): BookState | null => {
-    switch (currentState) {
-      case 'not_started':
-        return 'in_progress'
-      case 'in_progress':
-        return 'finished'
-      case 'finished':
-        return 'in_progress'
-      default:
-        return null
-    }
-  }
-
-  const getStateActionText = (currentState: BookState): string => {
-    switch (currentState) {
-      case 'not_started':
-        return 'Start Reading'
-      case 'in_progress':
-        return 'Mark Finished'
-      case 'finished':
-        return 'Re-read'
-    }
-  }
-
-  const handleStateAction = () => {
-    const nextState = getNextState(book.state)
-    if (nextState && onStateChange) {
-      onStateChange(nextState)
-    }
-  }
-
-  const progressPercentage = book.metadata.pages && book.progress 
-    ? (book.progress / book.metadata.pages) * 100 
-    : 0
 
   return (
-    <Card className="w-full max-w-sm">
+    <Card 
+      className="overflow-hidden hover:shadow-lg transition-shadow duration-200 cursor-pointer group"
+      onClick={handleCardClick}
+      onKeyDown={handleCardKeyDown}
+      tabIndex={0}
+      role="button"
+      aria-label={`View details for ${book.title} by ${book.author}`}
+    >
+      <div className="relative h-48 bg-muted">
+        {book.metadata.coverUrl ? (
+          <Image
+            src={book.metadata.coverUrl}
+            alt={`Cover of ${book.title}`}
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-200"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          />
+        ) : (
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center text-muted-foreground">
+              <div className="text-2xl mb-2">📚</div>
+              <p className="text-sm font-medium">{book.title}</p>
+            </div>
+          </div>
+        )}
+        <div className="absolute top-2 right-2">
+          <Badge variant={stateVariants[book.state]}>
+            {stateLabels[book.state]}
+          </Badge>
+        </div>
+        {!book.isOwned && (
+          <div className="absolute top-2 left-2">
+            <Badge variant="secondary">Wishlist</Badge>
+          </div>
+        )}
+      </div>
+      
       <CardContent className="p-4">
-        <BookCard.Cover src={book.metadata.coverUrl} alt={book.title} />
-        <BookCard.Content>
-          <BookCard.Title>{book.title}</BookCard.Title>
-          <BookCard.Author>{book.author}</BookCard.Author>
-          <BookCard.State state={book.state} />
-          
-          {book.state === 'in_progress' && book.metadata.pages && (
-            <BookCard.Progress 
-              current={book.progress || 0} 
-              total={book.metadata.pages}
-              percentage={progressPercentage}
+        <h3 className="font-semibold text-lg text-card-foreground mb-1 truncate">
+          {book.title}
+        </h3>
+        <p className="text-muted-foreground text-sm mb-2">{book.author}</p>
+        
+        {book.metadata.genre && book.metadata.genre.length > 0 && (
+          <div className="flex flex-wrap gap-1 mb-3">
+            {book.metadata.genre.slice(0, 2).map((genre) => (
+              <Badge key={genre} variant="outline">
+                {genre}
+              </Badge>
+            ))}
+            {book.metadata.genre.length > 2 && (
+              <Badge variant="outline">
+                +{book.metadata.genre.length - 2}
+              </Badge>
+            )}
+          </div>
+        )}
+        
+        {book.state === 'in_progress' && book.progress && book.metadata.pages && (
+          <div className="mb-3">
+            <Progress 
+              value={book.progress} 
+              max={book.metadata.pages} 
+              showLabel 
             />
-          )}
-          
-          {book.metadata.rating && (
-            <div className="flex items-center gap-1 mt-2">
-              <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-              <span className="text-sm text-muted-foreground">
-                {book.metadata.rating}/5
-              </span>
+          </div>
+        )}
+        
+        <div className="flex items-center justify-between text-sm text-muted-foreground">
+          <span>
+            {book.metadata.pages ? `${book.metadata.pages} pages` : 'Unknown length'}
+          </span>
+          {book.metadata.rating && book.state === 'finished' && (
+            <div className="flex items-center">
+              <span className="mr-1">⭐</span>
+              <span>{book.metadata.rating}/5</span>
             </div>
           )}
-        </BookCard.Content>
+        </div>
       </CardContent>
-      
-      <CardFooter className="p-4 pt-0">
-        <BookCard.Actions>
-          <Button 
-            size="sm" 
-            onClick={handleStateAction}
-            className="w-full"
-          >
-            {getStateActionText(book.state)}
-          </Button>
-        </BookCard.Actions>
-      </CardFooter>
     </Card>
   )
 }
-
-BookCard.Cover = ({ src, alt }: { src?: string; alt: string }) => (
-  <div className="w-full h-48 bg-muted rounded-md mb-3 overflow-hidden">
-    {src ? (
-      <img 
-        src={src} 
-        alt={alt} 
-        className="w-full h-full object-cover"
-      />
-    ) : (
-      <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-        <BookOpen className="h-12 w-12" />
-      </div>
-    )}
-  </div>
-)
-
-BookCard.Content = ({ children }: { children: React.ReactNode }) => (
-  <div className="space-y-2">
-    {children}
-  </div>
-)
-
-BookCard.Title = ({ children }: { children: string }) => (
-  <h3 className="font-semibold text-lg leading-tight line-clamp-2">
-    {children}
-  </h3>
-)
-
-BookCard.Author = ({ children }: { children: string }) => (
-  <p className="text-muted-foreground text-sm">
-    by {children}
-  </p>
-)
-
-BookCard.State = ({ state }: { state: BookState }) => {
-  const getStateIcon = (state: BookState) => {
-    switch (state) {
-      case 'not_started':
-        return <Clock className="h-3 w-3" />
-      case 'in_progress':
-        return <BookOpen className="h-3 w-3" />
-      case 'finished':
-        return <CheckCircle2 className="h-3 w-3" />
-    }
-  }
-
-  const getStateColor = (state: BookState) => {
-    switch (state) {
-      case 'not_started':
-        return 'secondary' as const
-      case 'in_progress':
-        return 'default' as const
-      case 'finished':
-        return 'outline' as const
-    }
-  }
-
-  const getStateText = (state: BookState) => {
-    switch (state) {
-      case 'not_started':
-        return 'Not Started'
-      case 'in_progress':
-        return 'Reading'
-      case 'finished':
-        return 'Finished'
-    }
-  }
-
-  return (
-    <Badge variant={getStateColor(state)} className="w-fit">
-      {getStateIcon(state)}
-      <span className="ml-1">{getStateText(state)}</span>
-    </Badge>
-  )
-}
-
-BookCard.Progress = ({ 
-  current, 
-  total, 
-  percentage 
-}: { 
-  current: number
-  total: number
-  percentage: number
-}) => (
-  <div className="space-y-1">
-    <div className="flex justify-between text-xs text-muted-foreground">
-      <span>Progress</span>
-      <span>{current}/{total} pages</span>
-    </div>
-    <Progress value={percentage} className="h-2" />
-    <div className="text-right text-xs text-muted-foreground">
-      {Math.round(percentage)}%
-    </div>
-  </div>
-)
-
-BookCard.Actions = ({ children }: { children: React.ReactNode }) => (
-  <div className="flex gap-2 w-full">
-    {children}
-  </div>
-)
-
-export { BookCard }
