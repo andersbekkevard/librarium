@@ -19,3 +19,6 @@ Future integrations:
 - Wishlists, separated from actual owned books
 - LLM based book reccomendations
 - Gameification, like rewards for reading, setting reading goals etc
+
+Inspiration links:
+https://www.behance.net/gallery/221933151/Goodreads-Redesign-Case-Study
